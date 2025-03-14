@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeCoin Challenge</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.43.0/min/vs/loader.js"></script>
+    <style>
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #121212;
+  --text-primary: #e0e0e0;
+  --text-secondary: #888888;
+  --accent: #4ade80;
+  --accent-dark: #22c55e;
+  --danger: #ef4444;
+  --border: #333333;
+  --card-bg: #161616;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --twitter: #1DA1F2;
+  --telegram: #26A5E4;
+}
+
+/* Dark theme variables */
+.dark-theme {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #121212;
+  --text-primary: #e0e0e0;
+  --text-secondary: #888888;
+}
+
+/* Light theme variables */
+.light-theme {
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #ffffff;
+  --text-primary: #121212;
+  --text-secondary: #555555;
+  --card-bg: #ffffff;
+  --border: #dddddd;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Header and Navigation */
+header {
+  position: sticky;
+  top: 0;
+  padding: 1rem 0;
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  backdrop-filter: blur(8px);
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 12000;
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+  position: relative;
+  padding: 0.3rem 0;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+}
+
+.nav-link:hover::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: var(--accent);
+  bottom: 0;
+  left: 0;
+  transform: scaleX(1);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+/* Header Actions - New container for social links, buy button, theme toggle, and wallet */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Social Links */
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.social-link.twitter:hover {
+  background-color: var(--twitter);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(29, 161, 242, 0.4);
+}
+
+.social-link.telegram:hover {
+  background-color: var(--telegram);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(38, 165, 228, 0.4);
+}
+
+/* Buy Button */
+.btn-buy {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #000000;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(74, 222, 128, 0.2);
+}
+
+.btn-buy:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(74, 222, 128, 0.4);
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+}
+
+.btn-buy:active {
+  transform: translateY(0);
+}
+
+/* Wallet Status */
+.wallet-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.wallet-disconnected {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.wallet-connected {
+  background-color: rgba(74, 222, 128, 0.1);
+  color: var(--accent);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: color 0.2s ease;
+}
+
+.theme-toggle:hover {
+  color: var(--text-primary);
+}
+
+/* Hero Section */
+.hero {
+  padding: 6rem 0;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(to right, var(--text-primary), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  max-width: 700px;
+  margin: 0 auto 2rem auto;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.7rem 1.5rem;
+  border-radius: 4px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--accent);
+  color: #000000;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.btn-outline:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Section Styles */
+section {
+  padding: 4rem 0;
+  border-top: 1px solid var(--border);
+}
+
+section h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  display: inline-block;
+}
+
+section h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 50%;
+  height: 3px;
+  background-color: var(--accent);
+}
+
+/* Challenge Card */
+.challenge-card {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-top: 2rem;
+  box-shadow: var(--shadow);
+}
+
+.card-header {
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-header h3 {
+  font-size: 1.5rem;
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--danger);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab.active {
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Code Editor */
+.code-editor {
+  height: 300px;
+  width: 100%;
+  margin: 1.5rem 0;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background-color: rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.code-editor::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  content: "transaction.js";
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Rewards Grid */
+.rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.reward-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reward-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow);
+  border-color: var(--accent);
+}
+
+.reward-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(74, 222, 128, 0.1);
+  border-radius: 50%;
+  margin-bottom: 1.5rem;
+}
+
+.reward-icon svg {
+  color: var(--accent);
+}
+
+.reward-card h3 {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.reward-card p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* FAQ Accordion */
+.accordion {
+  margin-top: 2rem;
+}
+
+.accordion-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.accordion-header {
+  padding: 1.2rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.accordion-header:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.toggle-icon {
+  transition: transform 0.3s ease;
+}
+
+.accordion-item.active .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.accordion-item.active .accordion-body {
+  max-height: 300px;
+}
+
+.accordion-body-inner {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  color: var(--text-secondary);
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal.show {
+  display: flex;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  padding: 2rem;
+  position: relative;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.close-modal {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.close-modal:hover {
+  color: var(--danger);
+}
+
+/* Success Animation */
+.success-animation {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.checkmark {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2;
+  stroke: var(--accent);
+  margin: 0 auto 1.5rem auto;
+  position: relative;
+}
+
+.checkmark-stem {
+  position: absolute;
+  width: 3px;
+  height: 25px;
+  background-color: var(--accent);
+  left: 26px;
+  top: 12px;
+  transform: rotate(45deg);
+}
+
+.checkmark-kick {
+  position: absolute;
+  width: 3px;
+  height: 12px;
+  background-color: var(--accent);
+  left: 18px;
+  top: 28px;
+  transform: rotate(-45deg);
+}
+
+/* Social Share */
+.social-share {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.social-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.social-button:hover {
+  background-color: var(--accent);
+  color: #000000;
+  transform: translateY(-3px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(74, 222, 128, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+  }
+}
+
+/* Terminal-like text blinking cursor effect for hero text */
+.hero h1::after {
+  content: '|';
+  display: inline-block;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+  
+  .hero h1 {
+    font-size: 2rem;
+  }
+  
+  .rewards-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  /* Adjust header for mobile */
+  .header-actions {
+    gap: 0.6rem;
+  }
+  
+  .social-link {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .btn-buy {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .wallet-status span {
+    display: none; /* Hide wallet text on mobile */
+  }
+  
+  .wallet-status {
+    padding: 0.3rem;
+  }
+}
+
+/* Responsive header for very small screens */
+@media (max-width: 480px) {
+  .logo span {
+    font-size: 1rem;
+  }
+  
+  .header-actions {
+    gap: 0.4rem;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Add a grid pattern to the background for a more "hacker" feel */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    linear-gradient(rgba(18, 18, 18, 0.8) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18, 18, 18, 0.8) 1px, transparent 1px);
+  background-size: 20px 20px;
+  z-index: -1;
+  opacity: 0.1;
+}
+
+/* JavaScript-related styles for functionality */
+.accordion-item.active .accordion-body {
+  max-height: 300px;
+}
+
+/* Add a subtle glow to buttons on hover */
+.btn:hover {
+  box-shadow: 0 0 15px rgba(74, 222, 128, 0.3);
+}
+
+/* Add a matrix-like effect to the timer */
+#countdown {
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 1px;
+  text-shadow: 0 0 5px var(--danger);
+}
+
+/* Add a subtle hover animation to social icons */
+.social-link svg {
+  transition: transform 0.2s ease;
+}
+
+.social-link:hover svg {
+  transform: scale(1.15);
+}
+
+/* Button hover effects */
+.btn-buy {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-buy::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: left 0.3s ease;
+}
+
+.btn-buy:hover::after {
+  left: 100%;
+}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <img src="image-removebg-preview (14) (1).png" alt="Logo" width="24" height="24">
+                    <span>Code Experiment</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#challenges" class="nav-link">Challenges</a>
+                    <a href="#rewards" class="nav-link">Rewards</a>
+                    <a href="#faq" class="nav-link">FAQ</a>
+                </div>
+                <div class="header-actions">
+                    <a href="https://x.com/Codexperiment_" class="social-link twitter">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
+                        </svg>
+                    </a>
+                    <a href="https://t.me/codexperiment" class="social-link telegram">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.198 2.433a2.242 2.242 0 0 0-1.022.215l-16.5 7.5a2.25 2.25 0 0 0 .45 4.264l3.876.773V20a2.25 2.25 0 0 0 3.841 1.591l2.687-2.687 4.192 3.35a2.248 2.248 0 0 0 3.602-1.341L22 4.5a2.242 2.242 0 0 0-.802-2.067z"></path>
+                        </svg>
+                    </a>
+                    <a href="https://pump.fun/profile/EACjNKtKngPkGFMnEBSXTkghNkYkSn4BucuCNnFzcdFz" target="_blank">
+                        <button class="btn btn-buy">Buy</button>
+                    </a>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </button>
+                    <div class="wallet-status wallet-disconnected" id="wallet-status">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                            <line x1="2" y1="10" x2="22" y2="10"></line>
+                        </svg>
+                        <span>Wallet Disconnected</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Fix the Code. Earn Rewards.</h1>
+            <p>Solve Solana development challenges and earn SOL tokens. Put your blockchain development skills to the test with time-limited challenges.</p>
+            <button class="btn btn-primary" id="connect-wallet">Connect Wallet</button>
+        </div>
+    </section>
+
+    <section class="challenge-section" id="challenges">
+        <div class="container">
+            <h2>Current Challenge</h2>
+            <div class="challenge-card">
+                <div class="card-header">
+                    <h3>Fix the Solana Transaction Handler</h3>
+                    <div class="timer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span id="countdown">23:59:59</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="tabs">
+                        <div class="tab active" data-tab="challenge">Challenge</div>
+                        <div class="tab" data-tab="instructions">Instructions</div>
+                        <div class="tab" data-tab="hints">Hints</div>
+                    </div>
+                    <div class="tab-content active" id="challenge-tab">
+                        <p>There's a bug in the following Solana transaction handler. Identify and fix the issue to claim your reward.</p>
+                        <div id="editor" class="code-editor"></div>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" id="submit-solution">Submit Solution</button>
+                            <button class="btn btn-outline" id="reset-code">Reset Code</button>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="instructions-tab">
+                        <h4>Challenge Instructions</h4>
+                        <p>In this challenge, you need to fix a bug in a Solana transaction handler. The code is supposed to:</p>
+                        <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                            <li>Create a transaction to send SOL between accounts</li>
+                            <li>Add a memo to the transaction</li>
+                            <li>Sign and send the transaction</li>
+                        </ul>
+                        <p>However, there's an issue with the transaction construction that prevents it from executing correctly. Find and fix the problem to claim your reward.</p>
+                    </div>
+                    <div class="tab-content" id="hints-tab">
+                        <h4>Helpful Hints</h4>
+                        <p>Not sure where to start? Here are some hints:</p>
+                        <ul style="margin-left: 1.5rem;">
+                            <li>Check how the transaction is being constructed</li>
+                            <li>Verify that all required signers are included</li>
+                            <li>Make sure the instruction order is correct</li>
+                            <li>Ensure proper error handling for Solana API calls</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="rewards-section" id="rewards">
+        <div class="container">
+            <h2>Challenge Rewards</h2>
+            <p>Successfully complete challenges to earn these awesome rewards!</p>
+            <div class="rewards-grid">
+                <div class="reward-card">
+                    <div class="reward-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="8" r="7"></circle>
+                            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                        </svg>
+                    </div>
+                    <h3>1,000 CodeCoins</h3>
+                    <p>Complete daily challenges to earn CodeCoin tokens that can be exchanged for NFTs and more.</p>
+                </div>
+                <div class="reward-card">
+                    <div class="reward-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </div>
+                    <h3>Exclusive NFTs</h3>
+                    <p>Unlock limited edition NFTs showcasing your developer achievements and skills.</p>
+                </div>
+                <div class="reward-card">
+                    <div class="reward-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                    </div>
+                    <h3>Leaderboard Ranking</h3>
+                    <p>Compete with other developers to climb the ranks and earn special prizes for top performers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-section" id="faq">
+        <div class="container">
+            <h2>Frequently Asked Questions</h2>
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>How do the code challenges work?</span>
+                        <svg class="toggle-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>Each day, we post a new coding challenge related to Solana development. You'll have a limited time to fix the bug or complete the code. If your solution passes all tests, you'll automatically receive your reward to your connected wallet.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>What rewards can I earn?</span>
+                        <svg class="toggle-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>Rewards include CodeCoin tokens, exclusive NFTs, and leaderboard rankings. The more challenges you complete, the more rewards you'll earn. Special challenges may offer bigger rewards, and consistent participation unlocks bonus rewards.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>How do I connect my wallet?</span>
+                        <svg class="toggle-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>Click the "Connect Wallet" button and select your preferred Solana wallet (Phantom, Solflare, etc.). Make sure you're on the Solana network to receive your rewards. If you don't have a Solana wallet yet, we recommend installing Phantom Wallet.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>When do new challenges appear?</span>
+                        <svg class="toggle-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>New challenges are released every 24 hours. The countdown timer shows the time remaining for the current challenge. Make sure to complete each challenge before the timer expires to earn rewards.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal" id="success-modal">
+        <div class="modal-content">
+            <button class="close-modal" id="close-modal">&times;</button>
+            <div class="success-animation">
+                <div class="checkmark">
+                    <div class="checkmark-stem"></div>
+                    <div class="checkmark-kick"></div>
+                </div>
+                <h3>Congratulations!</h3>
+                <p>You've successfully fixed the code and earned your reward.</p>
+                <p><strong>+1,000 CodeCoins</strong> have been sent to your wallet.</p>
+            </div>
+            <div class="social-share">
+                <a href="#" class="social-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                    </svg>
+                </a>
+                <a href="#" class="social-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                    </svg>
+                </a>
+                <a href="#" class="social-button">
+                    <svg xmlns="http://www.w3.org/2000/svg
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                </a>
+                <a href="#" class="social-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                        <rect x="2" y="9" width="4" height="12"></rect>
+                        <circle cx="4" cy="4" r="2"></circle>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="wallet-modal">
+        <div class="modal-content">
+            <button class="close-modal" id="close-wallet-modal">&times;</button>
+            <h3>Connect Wallet</h3>
+            <p style="margin-bottom: 1.5rem;">Connect your Solana wallet to participate in challenges and claim rewards.</p>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <button class="btn btn-outline" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span style="display: flex; align-items: center; gap: 0.5rem;">
+                        <svg width="24" height="24" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="64" cy="64" r="64" fill="url(#paint0_linear)"/>
+                            <path d="M110.584 64.9142L78.5997 97.0871C77.0497 98.6371 74.4997 98.6371 72.8872 97.0871L40.8372 64.9142C39.2872 63.3642 39.2872 60.8142 40.8372 59.2017L72.8872 27.0287C74.4372 25.4787 76.9872 25.4787 78.5997 27.0287L110.65 59.2017C112.2 60.8142 112.2 63.3642 110.584 64.9142Z" fill="white"/>
+                            <defs>
+                                <linearGradient id="paint0_linear" x1="64" y1="0" x2="64" y2="128" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#534BB1"/>
+                                    <stop offset="1" stop-color="#551BF9"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        Phantom
+                    </span>
+                    <span>Popular</span>
+                </button>
+                <button class="btn btn-outline" style="display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem;">
+                    <svg width="24" height="24" viewBox="0 0 132 132" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="132" height="132" rx="16" fill="black"/>
+                        <path d="M66 19L22 43.4375V92.3125L66 116.75L110 92.3125V43.4375L66 19Z" stroke="#FA5400" stroke-width="5"/>
+                        <path d="M66 68.375L22 43.4375L66 19L110 43.4375L66 68.375Z" stroke="#FA5400" stroke-width="5"/>
+                        <path d="M66 19V68.375M66 116.75V68.375" stroke="#FA5400" stroke-width="5"/>
+                    </svg>
+                    Solflare
+                </button>
+                <button class="btn btn-outline" style="display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21.3335 12.0004C21.3335 17.1554 17.1552 21.3337 12.0002 21.3337C6.84516 21.3337 2.66683 17.1554 2.66683 12.0004C2.66683 6.84536 6.84516 2.66703 12.0002 2.66703C17.1552 2.66703 21.3335 6.84536 21.3335 12.0004Z" fill="#0078D4"/>
+                        <path d="M5.33333 12L10 16.6667L18.6667 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Backpack
+                </button>
+                <button class="btn btn-outline" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span style="display: flex; align-items: center; gap: 0.5rem;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21.3335 12.0004C21.3335 17.1554 17.1552 21.3337 12.0002 21.3337C6.84516 21.3337 2.66683 17.1554 2.66683 12.0004C2.66683 6.84536 6.84516 2.66703 12.0002 2.66703C17.1552 2.66703 21.3335 6.84536 21.3335 12.0004Z" fill="#8247E5"/>
+                            <path d="M7.33333 12L10.6667 15.3333L16.6667 9.33333" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Other Wallets
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 CodeCoin. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initial countdown setup
+        let countdown = {
+            hours: 23,
+            minutes: 59,
+            seconds: 59
+        };
+
+        // Sample bug code for the editor
+        const initialCode = `async function handleTransaction(connection, sender, recipient, amount, memo) {
+  try {
+    // Create a new transaction
+    const transaction = new Transaction();
+    
+    // Add a transfer instruction to send SOL
+    transaction.add(
+      SystemProgram.transfer({
+        fromPubkey: sender.publicKey,
+        toPubkey: recipient,
+        lamports: amount * LAMPORTS_PER_SOL,
+      })
+    );
+    
+    // Add memo instruction
+    transaction.add(
+      new TransactionInstruction({
+        keys: [],
+        programId: new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
+        data: Buffer.from(memo, "utf-8"),
+      })
+    );
+    
+    // Send transaction
+    const signature = await sendAndConfirmTransaction(
+      connection,
+      transaction
+      // Missing sender as signer parameter
+    );
+    
+    console.log("Transaction sent with signature:", signature);
+    return signature;
+  } catch (error) {
+    console.error("Error sending transaction:", error);
+    throw error;
+  }
+}`;
+
+        const correctCode = `async function handleTransaction(connection, sender, recipient, amount, memo) {
+  try {
+    // Create a new transaction
+    const transaction = new Transaction();
+    
+    // Add a transfer instruction to send SOL
+    transaction.add(
+      SystemProgram.transfer({
+        fromPubkey: sender.publicKey,
+        toPubkey: recipient,
+        lamports: amount * LAMPORTS_PER_SOL,
+      })
+    );
+    
+    // Add memo instruction
+    transaction.add(
+      new TransactionInstruction({
+        keys: [],
+        programId: new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
+        data: Buffer.from(memo, "utf-8"),
+      })
+    );
+    
+    // Send transaction
+    const signature = await sendAndConfirmTransaction(
+      connection,
+      transaction,
+      [sender] // Added sender as signer parameter
+    );
+    
+    console.log("Transaction sent with signature:", signature);
+    return signature;
+  } catch (error) {
+    console.error("Error sending transaction:", error);
+    throw error;
+  }
+}`;
+
+        // Update countdown timer
+        function updateCountdown() {
+            if (countdown.seconds > 0) {
+                countdown.seconds--;
+            } else {
+                if (countdown.minutes > 0) {
+                    countdown.minutes--;
+                    countdown.seconds = 59;
+                } else {
+                    if (countdown.hours > 0) {
+                        countdown.hours--;
+                        countdown.minutes = 59;
+                        countdown.seconds = 59;
+                    }
+                }
+            }
+
+            const formatted = `${String(countdown.hours).padStart(2, '0')}:${String(countdown.minutes).padStart(2, '0')}:${String(countdown.seconds).padStart(2, '0')}`;
+            document.getElementById('countdown').textContent = formatted;
+        }
+
+        // Initialize Monaco Editor when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set up countdown timer
+            setInterval(updateCountdown, 1000);
+            
+            // Initialize Monaco Editor
+            require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.43.0/min/vs' }});
+
+            require(['vs/editor/editor.main'], () => {
+                const editor = monaco.editor.create(document.getElementById('editor'), {
+                    value: initialCode,
+                    language: 'javascript',
+                    theme: 'vs-dark',
+                    minimap: { enabled: false },
+                    automaticLayout: true,
+                    scrollBeyondLastLine: false,
+                });
+
+                // Reset code button
+                document.getElementById('reset-code').addEventListener('click', () => {
+                    editor.setValue(initialCode);
+                });
+
+                // Submit solution button
+                document.getElementById('submit-solution').addEventListener('click', () => {
+                    const code = editor.getValue();
+                    
+                    // Simple check if the code includes the missing parameter
+                    if (code.includes('[sender]') || code.includes('(connection, transaction, [sender])')) {
+                        document.getElementById('success-modal').classList.add('active');
+                    } else {
+                        alert('Your solution is not correct. Try again!');
+                    }
+                });
+            });
+
+            // Tab functionality
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Hide all tab contents
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Show the corresponding tab content
+                    const tabContentId = tab.getAttribute('data-tab') + '-tab';
+                    document.getElementById(tabContentId).classList.add('active');
+                });
+            });
+
+            // Accordion functionality
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const item = header.parentElement;
+                    item.classList.toggle('active');
+                });
+            });
+
+            // Modal close buttons
+            document.getElementById('close-modal').addEventListener('click', () => {
+                document.getElementById('success-modal').classList.remove('active');
+            });
+            
+            document.getElementById('close-wallet-modal').addEventListener('click', () => {
+                document.getElementById('wallet-modal').classList.remove('active');
+            });
+
+            // Connect wallet button
+            document.getElementById('connect-wallet').addEventListener('click', () => {
+                document.getElementById('wallet-modal').classList.add('active');
+            });
+
+            // Simulate wallet connection (first wallet button)
+            const walletButtons = document.querySelectorAll('.wallet-modal .btn-outline');
+            if (walletButtons.length > 0) {
+                walletButtons[0].addEventListener('click', () => {
+                    const walletStatus = document.getElementById('wallet-status');
+                    walletStatus.classList.remove('wallet-disconnected');
+                    walletStatus.classList.add('wallet-connected');
+                    walletStatus.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="8 12 12 16 16 10"></polyline>
+                        </svg>
+                        <span>Wallet Connected</span>
+                    `;
+                    document.getElementById('wallet-modal').classList.remove('active');
+                });
+            }
+
+            // Theme toggle
+            const themeToggle = document.getElementById('theme-toggle');
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('light-mode');
+                
+                // Update theme toggle icon
+                if (document.body.classList.contains('light-mode')) {
+                    themeToggle.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    `;
+                } else {
+                    themeToggle.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    `;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
