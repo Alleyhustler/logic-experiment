@@ -1198,7 +1198,7 @@ body::before {
         });
 
         // Phantom Wallet connection
-        const connectPhantomButton = document.querySelector('.btn-outline[data-wallet="phantom"]');
+        const connectPhantomButton = document.querySelector('.wallet-modal .btn-outline:first-child');
         if (connectPhantomButton) {
             connectPhantomButton.addEventListener('click', async () => {
                 try {
