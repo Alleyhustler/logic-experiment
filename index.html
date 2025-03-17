@@ -1092,201 +1092,201 @@ body::before {
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
 
     <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Set up countdown timer
-    let countdown = {
-        hours: 23,
-        minutes: 59,
-        seconds: 59
-    };
+    document.addEventListener('DOMContentLoaded', () => {
+        // Set up countdown timer
+        let countdown = {
+            hours: 23,
+            minutes: 59,
+            seconds: 59
+        };
 
-    function updateCountdown() {
-        if (countdown.seconds > 0) {
-            countdown.seconds--;
-        } else {
-            if (countdown.minutes > 0) {
-                countdown.minutes--;
-                countdown.seconds = 59;
+        function updateCountdown() {
+            if (countdown.seconds > 0) {
+                countdown.seconds--;
             } else {
-                if (countdown.hours > 0) {
-                    countdown.hours--;
-                    countdown.minutes = 59;
+                if (countdown.minutes > 0) {
+                    countdown.minutes--;
                     countdown.seconds = 59;
+                } else {
+                    if (countdown.hours > 0) {
+                        countdown.hours--;
+                        countdown.minutes = 59;
+                        countdown.seconds = 59;
+                    }
                 }
             }
+
+            const formatted = `${String(countdown.hours).padStart(2, '0')}:${String(countdown.minutes).padStart(2, '0')}:${String(countdown.seconds).padStart(2, '0')}`;
+            document.getElementById('countdown').textContent = formatted;
         }
 
-        const formatted = `${String(countdown.hours).padStart(2, '0')}:${String(countdown.minutes).padStart(2, '0')}:${String(countdown.seconds).padStart(2, '0')}`;
-        document.getElementById('countdown').textContent = formatted;
-    }
+        setInterval(updateCountdown, 1000);
 
-    setInterval(updateCountdown, 1000);
+        // Initialize Monaco Editor
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.43.0/min/vs' }});
 
-    // Initialize Monaco Editor
-    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.43.0/min/vs' }});
-
-    require(['vs/editor/editor.main'], () => {
-        const editor = monaco.editor.create(document.getElementById('editor'), {
-            value: initialCode,
-            language: 'javascript',
-            theme: 'vs-dark',
-            minimap: { enabled: false },
-            automaticLayout: true,
-            scrollBeyondLastLine: false,
-        });
-
-        // Reset code button
-        document.getElementById('reset-code').addEventListener('click', () => {
-            editor.setValue(initialCode);
-        });
-
-        // Submit solution button
-        document.getElementById('submit-solution').addEventListener('click', () => {
-            const code = editor.getValue();
-
-            // Simple check if the code includes the missing parameter
-            if (code.includes('[sender]') || code.includes('(connection, transaction, [sender])')) {
-                document.getElementById('success-modal').classList.add('active');
-            } else {
-                alert('Your solution is not correct. Try again!');
-            }
-        });
-    });
-
-    // Tab functionality
-    const tabs = document.querySelectorAll('.tab');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            // Remove active class from all tabs
-            tabs.forEach(t => t.classList.remove('active'));
-
-            // Add active class to clicked tab
-            tab.classList.add('active');
-
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
+        require(['vs/editor/editor.main'], () => {
+            const editor = monaco.editor.create(document.getElementById('editor'), {
+                value: initialCode,
+                language: 'javascript',
+                theme: 'vs-dark',
+                minimap: { enabled: false },
+                automaticLayout: true,
+                scrollBeyondLastLine: false,
             });
 
-            // Show the corresponding tab content
-            const tabContentId = tab.getAttribute('data-tab') + '-tab';
-            document.getElementById(tabContentId).classList.add('active');
-        });
-    });
+            // Reset code button
+            document.getElementById('reset-code').addEventListener('click', () => {
+                editor.setValue(initialCode);
+            });
 
-    // Accordion functionality
-    const accordionHeaders = document.querySelectorAll('.accordion-header');
-    accordionHeaders.forEach(header => {
-        header.addEventListener('click', () => {
-            const item = header.parentElement;
-            item.classList.toggle('active');
-        });
-    });
+            // Submit solution button
+            document.getElementById('submit-solution').addEventListener('click', () => {
+                const code = editor.getValue();
 
-    // Modal close buttons
-    document.getElementById('close-modal').addEventListener('click', () => {
-        document.getElementById('success-modal').classList.remove('active');
-    });
-
-    document.getElementById('close-wallet-modal').addEventListener('click', () => {
-        document.getElementById('wallet-modal').classList.remove('active');
-    });
-
-    // Connect wallet button
-    document.getElementById('connect-wallet').addEventListener('click', () => {
-        document.getElementById('wallet-modal').classList.add('active');
-    });
-
-    // Phantom Wallet connection
-    const connectPhantomButton = document.querySelector('.btn-outline[data-wallet="phantom"]');
-    if (connectPhantomButton) {
-        connectPhantomButton.addEventListener('click', async () => {
-            try {
-                // Check if Phantom Wallet is installed
-                if (!window.solana || !window.solana.isPhantom) {
-                    alert('Phantom Wallet is not installed. Please install it first.');
-                    return;
+                // Simple check if the code includes the missing parameter
+                if (code.includes('[sender]') || code.includes('(connection, transaction, [sender])')) {
+                    document.getElementById('success-modal').classList.add('active');
+                } else {
+                    alert('Your solution is not correct. Try again!');
                 }
+            });
+        });
 
-                // Connect to Phantom Wallet
-                const provider = window.solana;
-                await provider.connect();
+        // Tab functionality
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
 
-                // Update wallet status
+                // Add active class to clicked tab
+                tab.classList.add('active');
+
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                // Show the corresponding tab content
+                const tabContentId = tab.getAttribute('data-tab') + '-tab';
+                document.getElementById(tabContentId).classList.add('active');
+            });
+        });
+
+        // Accordion functionality
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.parentElement;
+                item.classList.toggle('active');
+            });
+        });
+
+        // Modal close buttons
+        document.getElementById('close-modal').addEventListener('click', () => {
+            document.getElementById('success-modal').classList.remove('active');
+        });
+
+        document.getElementById('close-wallet-modal').addEventListener('click', () => {
+            document.getElementById('wallet-modal').classList.remove('active');
+        });
+
+        // Connect wallet button
+        document.getElementById('connect-wallet').addEventListener('click', () => {
+            document.getElementById('wallet-modal').classList.add('active');
+        });
+
+        // Phantom Wallet connection
+        const connectPhantomButton = document.querySelector('.btn-outline[data-wallet="phantom"]');
+        if (connectPhantomButton) {
+            connectPhantomButton.addEventListener('click', async () => {
+                try {
+                    // Check if Phantom Wallet is installed
+                    if (!window.solana || !window.solana.isPhantom) {
+                        alert('Phantom Wallet is not installed. Please install it first.');
+                        return;
+                    }
+
+                    // Connect to Phantom Wallet
+                    const provider = window.solana;
+                    await provider.connect();
+
+                    // Update wallet status
+                    const walletStatus = document.getElementById('wallet-status');
+                    walletStatus.classList.remove('wallet-disconnected');
+                    walletStatus.classList.add('wallet-connected');
+                    walletStatus.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="8 12 12 16 16 10"></polyline>
+                        </svg>
+                        <span>Wallet Connected</span>
+                    `;
+
+                    // Close the wallet modal
+                    document.getElementById('wallet-modal').classList.remove('active');
+
+                    // Fetch wallet balance
+                    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+                    const publicKey = provider.publicKey;
+                    const balance = await connection.getBalance(publicKey);
+                    console.log('Wallet balance:', balance / solanaWeb3.LAMPORTS_PER_SOL, 'SOL');
+
+                    // Display balance (optional)
+                    walletStatus.innerHTML += `<br><small>Balance: ${balance / solanaWeb3.LAMPORTS_PER_SOL} SOL</small>`;
+                } catch (error) {
+                    console.error('Error connecting Phantom Wallet:', error);
+                    alert('Failed to connect Phantom Wallet. Please try again.');
+                }
+            });
+        }
+
+        // Handle wallet disconnection
+        if (window.solana) {
+            window.solana.on('disconnect', () => {
                 const walletStatus = document.getElementById('wallet-status');
-                walletStatus.classList.remove('wallet-disconnected');
-                walletStatus.classList.add('wallet-connected');
+                walletStatus.classList.remove('wallet-connected');
+                walletStatus.classList.add('wallet-disconnected');
                 walletStatus.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="8 12 12 16 16 10"></polyline>
+                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                        <line x1="2" y1="10" x2="22" y2="10"></line>
                     </svg>
-                    <span>Wallet Connected</span>
+                    <span>Wallet Disconnected</span>
                 `;
+            });
+        }
 
-                // Close the wallet modal
-                document.getElementById('wallet-modal').classList.remove('active');
+        // Theme toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
 
-                // Fetch wallet balance
-                const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-                const publicKey = provider.publicKey;
-                const balance = await connection.getBalance(publicKey);
-                console.log('Wallet balance:', balance / solanaWeb3.LAMPORTS_PER_SOL, 'SOL');
-
-                // Display balance (optional)
-                walletStatus.innerHTML += `<br><small>Balance: ${balance / solanaWeb3.LAMPORTS_PER_SOL} SOL</small>`;
-            } catch (error) {
-                console.error('Error connecting Phantom Wallet:', error);
-                alert('Failed to connect Phantom Wallet. Please try again.');
+            // Update theme toggle icon
+            if (document.body.classList.contains('light-mode')) {
+                themeToggle.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                `;
+            } else {
+                themeToggle.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                `;
             }
         });
-    }
-
-    // Handle wallet disconnection
-    if (window.solana) {
-        window.solana.on('disconnect', () => {
-            const walletStatus = document.getElementById('wallet-status');
-            walletStatus.classList.remove('wallet-connected');
-            walletStatus.classList.add('wallet-disconnected');
-            walletStatus.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                    <line x1="2" y1="10" x2="22" y2="10"></line>
-                </svg>
-                <span>Wallet Disconnected</span>
-            `;
-        });
-    }
-
-    // Theme toggle
-    const themeToggle = document.getElementById('theme-toggle');
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('light-mode');
-
-        // Update theme toggle icon
-        if (document.body.classList.contains('light-mode')) {
-            themeToggle.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            `;
-        } else {
-            themeToggle.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            `;
-        }
     });
-});
   </script>
 </body>
 </html>
